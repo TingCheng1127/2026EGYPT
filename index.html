@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>埃及探險</title>
+    <title>Ancient Egypt</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,7 +16,7 @@
         .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .day-badge { flex: 0 0 auto; width: 60px; height: 50px; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 15px; background: white; color: var(--egypt-blue); transition: 0.3s; }
-        .day-badge.active { background-color: var(--egypt-red); color: white; transform: scale(1.1); box-shadow: 0 4px 10px rgba(165, 56, 22, 0.3); }
+        .day-badge.active { background-color: var(--egypt-red); color: white; transform: scale(1.1); }
         .checked { text-decoration: line-through; opacity: 0.5; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
@@ -24,154 +24,215 @@
 </head>
 <body class="pb-28">
 
-    <header class="p-6 text-center">
-        <h1 class="text-2xl font-bold text-[#a53816] tracking-widest uppercase">Ancient Egypt V8</h1>
+    <header class="p-8 text-center">
+        <h1 class="text-3xl font-bold text-[#a53816] tracking-[0.3em] uppercase">ANCIENT EGYPT</h1>
     </header>
 
     <main class="px-5">
         <section id="itinerary" class="tab-content active">
             <div id="day-selector" class="flex overflow-x-auto gap-3 py-4 no-scrollbar"></div>
             <div id="itinerary-list" class="space-y-4 mt-2"></div>
+            <button onclick="addCustomItinerary()" class="w-full mt-6 p-4 rounded-2xl border-2 border-dashed border-[#a53816] text-[#a53816] font-bold">+ 新增自訂行程</button>
         </section>
 
         <section id="packing" class="tab-content">
-            <h3 class="font-bold text-[#a53816] mb-4 text-lg"><i class="fas fa-suitcase-rolling mr-2"></i>行李清單</h3>
+            <h3 class="font-bold text-[#a53816] mb-4 text-lg"><i class="fas fa-suitcase-rolling mr-2"></i>行李清單檢查</h3>
             <div id="packing-list" class="space-y-6"></div>
         </section>
 
         <section id="finance" class="tab-content">
-            <div class="card p-5 mb-6 bg-stone-800 text-white">
-                <h3 class="text-xs font-bold text-orange-300 uppercase tracking-widest mb-4 flex justify-between items-center">
-                    <span>即時匯率換算</span>
-                    <i class="fas fa-exchange-alt"></i>
-                </h3>
-                <div class="space-y-4">
-                    <div class="flex items-center gap-3">
-                        <span class="w-12 text-xs opacity-60">EGP</span>
-                        <input type="number" id="calc-egp" oninput="convertCurrency('egp')" placeholder="0" class="flex-1 bg-transparent border-b border-white/20 text-xl font-bold outline-none focus:border-orange-300 transition">
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="w-12 text-xs opacity-60">USD</span>
-                        <input type="number" id="calc-usd" oninput="convertCurrency('usd')" placeholder="0" class="flex-1 bg-transparent border-b border-white/20 text-xl font-bold outline-none focus:border-orange-300 transition">
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <span class="w-12 text-xs opacity-60">TWD</span>
-                        <input type="number" id="calc-twd" oninput="convertCurrency('twd')" placeholder="0" class="flex-1 bg-transparent border-b border-white/20 text-xl font-bold outline-none focus:border-orange-300 transition">
-                    </div>
+            <div class="card p-5 mb-6 bg-[#4b4963] text-white">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-orange-200">EXCHANGE RATE</span>
+                    <span class="text-[10px] opacity-60">1 USD ≈ 32.5 TWD | 1 EGP ≈ 0.65 TWD</span>
                 </div>
-                <div class="mt-4 pt-4 border-t border-white/10 flex justify-between text-[10px] opacity-50">
-                    <span>1 EGP ≈ <span id="rate-egp-twd">0.65</span> TWD</span>
-                    <span>1 USD ≈ <span id="rate-usd-twd">32.5</span> TWD</span>
+                <div class="grid grid-cols-3 gap-2">
+                    <input type="number" id="calc-egp" oninput="convertRate('egp')" placeholder="EGP" class="bg-white/10 p-2 rounded-lg text-sm outline-none">
+                    <input type="number" id="calc-usd" oninput="convertRate('usd')" placeholder="USD" class="bg-white/10 p-2 rounded-lg text-sm outline-none">
+                    <input type="number" id="calc-twd" oninput="convertRate('twd')" placeholder="TWD" class="bg-white/10 p-2 rounded-lg text-sm outline-none">
                 </div>
             </div>
 
             <div class="card p-6 mb-6 text-center border-b-4 border-[#a53816]">
-                <span class="text-xs text-gray-400 uppercase tracking-widest font-bold">現場支出合計 (TWD)</span>
-                <div class="text-4xl font-bold text-[#a53816] mt-2" id="total-amount">0</div>
-                <div id="member-stats" class="grid grid-cols-2 gap-2 mt-4"></div>
+                <div class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">總團費支出 (TWD)</div>
+                <div class="text-3xl font-bold text-[#a53816] mt-1" id="total-group-amount">0</div>
+                <div id="member-summary" class="grid grid-cols-4 gap-2 mt-4"></div>
             </div>
 
-            <div class="card p-4 mb-6 space-y-3 bg-orange-50/50">
+            <div class="card p-4 mb-6 space-y-3 bg-white">
                 <div class="grid grid-cols-2 gap-2">
-                    <select id="new-exp-person" class="p-2 border rounded-lg text-sm outline-none">
+                    <select id="exp-person" class="p-2 border rounded-lg text-sm outline-none">
                         <option value="Ting">Ting</option><option value="Luke">Luke</option>
                         <option value="Joyce">Joyce</option><option value="Soda">Soda</option>
                     </select>
-                    <input type="number" id="new-exp-price" placeholder="金額 (TWD)" class="p-2 border rounded-lg text-sm outline-none">
+                    <select id="exp-type" class="p-2 border rounded-lg text-sm outline-none">
+                        <option value="group">團體消費</option><option value="personal">個人消費</option>
+                    </select>
                 </div>
-                <input type="text" id="new-exp-name" placeholder="項目內容 (如：晚餐、車資)" class="w-full p-2 border rounded-lg text-sm outline-none">
-                <button onclick="addUserExpense()" class="w-full bg-[#a53816] text-white py-2 rounded-lg font-bold text-sm shadow-md">新增紀錄</button>
+                <input type="text" id="exp-name" placeholder="項目內容" class="w-full p-2 border rounded-lg text-sm outline-none">
+                <input type="number" id="exp-price" placeholder="金額 (TWD)" class="w-full p-2 border rounded-lg text-sm outline-none">
+                <button onclick="addExpense()" class="w-full bg-[#a53816] text-white py-2 rounded-lg font-bold text-sm">新增帳項</button>
             </div>
 
             <div id="expense-list" class="space-y-3"></div>
         </section>
 
         <section id="tips" class="tab-content">
-            <div class="card p-6 text-center text-white relative overflow-hidden mb-6" style="background: linear-gradient(135deg, #a53816, #4b4963);">
-                <div class="relative z-10">
-                    <h2 class="text-lg">開羅 Cairo 天氣</h2>
-                    <div id="temp" class="text-5xl font-bold my-2">--°C</div>
-                    <p class="text-[10px] opacity-80">氣溫預測：早 20-30°C / 晚 15-20°C</p>
-                </div>
+            <div class="card p-6 text-center text-white mb-6" style="background: linear-gradient(135deg, #a53816, #4b4963);">
+                <div class="text-lg">Cairo Weather</div>
+                <div id="temp" class="text-5xl font-bold my-2">--°C</div>
+                <p class="text-[10px] opacity-70">3月底~4月初：早 20-30°C / 晚 15-20°C</p>
             </div>
-            <div class="card p-5 space-y-4">
-                <h3 class="font-bold text-[#a53816] text-sm"><i class="fas fa-info-circle mr-2"></i>旅遊指南</h3>
-                <div class="text-xs space-y-3 leading-relaxed">
-                    <p>📶 <b>網路：</b>建議 Orange 實體卡，不推 Esim。</p>
-                    <p>🚕 <b>叫車：</b>開羅 Uber，全埃及 inDrive (只叫 4.9⭐ 以上)。</p>
-                    <p>💵 <b>小費：</b>廁所 10 EGP，行李/房務 1 USD 或 20 EGP。</p>
+
+            <div class="space-y-6">
+                <div>
+                    <h3 class="font-bold text-[#a53816] mb-3"><i class="fas fa-hand-holding-usd mr-2"></i>小費文化建議 (EGP/USD)</h3>
+                    <div class="card overflow-hidden text-[11px]">
+                        <table class="w-full text-left">
+                            <tr class="bg-gray-50 border-b font-bold"><td class="p-2">項目</td><td class="p-2">金額建議</td><td class="p-2">備註</td></tr>
+                            <tr class="border-b"><td class="p-2">餐廳</td><td class="p-2">5-50 EGP</td><td class="p-2">視等級</td></tr>
+                            <tr class="border-b"><td class="p-2">廁所</td><td class="p-2">5-10 EGP</td><td class="p-2"></td></tr>
+                            <tr class="border-b"><td class="p-2">飯店行李</td><td class="p-2">1 USD / 20 EGP</td><td class="p-2">每件</td></tr>
+                            <tr class="border-b"><td class="p-2">包車司機</td><td class="p-2">100-200 EGP</td><td class="p-2">每日</td></tr>
+                            <tr class="border-b"><td class="p-2">騎駱駝</td><td class="p-2">3 USD / 100 EGP</td><td class="p-2">結束給</td></tr>
+                            <tr><td class="p-2">拍照協助</td><td class="p-2">1 USD / 10 EGP</td><td class="p-2">視情況</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-bold text-[#a53816] mb-3"><i class="fas fa-info-circle mr-2"></i>旅遊指南</h3>
+                    <div class="card p-4 text-xs space-y-2 leading-relaxed">
+                        <p>📶 <b>網路：</b>建議機場買 Orange 實體卡，避免 Esim。</p>
+                        <p>🚕 <b>叫車：</b>開羅 Uber 刷卡，全境 inDrive 議價 (只叫 4.9⭐ 以上)。</p>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 h-20 glass-nav flex justify-around items-center px-4 z-50">
-        <button onclick="nav('itinerary')" class="nav-item text-[#a53816] flex flex-col items-center gap-1"><i class="fas fa-calendar-alt text-xl"></i><span class="text-[10px] font-bold">行程</span></button>
-        <button onclick="nav('packing')" class="nav-item text-gray-400 flex flex-col items-center gap-1"><i class="fas fa-check-square text-xl"></i><span class="text-[10px] font-bold">行李</span></button>
+        <button onclick="nav('itinerary')" class="nav-item text-[#a53816] flex flex-col items-center gap-1"><i class="fas fa-map-location-dot text-xl"></i><span class="text-[10px] font-bold">行程</span></button>
+        <button onclick="nav('packing')" class="nav-item text-gray-400 flex flex-col items-center gap-1"><i class="fas fa-tasks text-xl"></i><span class="text-[10px] font-bold">清單</span></button>
         <button onclick="nav('finance')" class="nav-item text-gray-400 flex flex-col items-center gap-1"><i class="fas fa-wallet text-xl"></i><span class="text-[10px] font-bold">帳務</span></button>
-        <button onclick="nav('tips')" class="nav-item text-gray-400 flex flex-col items-center gap-1"><i class="fas fa-compass text-xl"></i><span class="text-[10px] font-bold">攻略</span></button>
+        <button onclick="nav('tips')" class="nav-item text-gray-400 flex flex-col items-center gap-1"><i class="fas fa-lightbulb text-xl"></i><span class="text-[10px] font-bold">攻略</span></button>
     </nav>
 
     <script>
-        const members = ["Ting", "Luke", "Joyce", "Soda"];
-        // 預設匯率 (可手動修改)
-        const rates = { egpToTwd: 0.65, usdToTwd: 32.5 };
-
-        const defaultData = {
+        const state = JSON.parse(localStorage.getItem('egypt_v9')) || {
             currentDay: "3/27",
+            checkedPacking: {},
+            expenses: [
+                { person: "Ting", name: "台-上-開(來回機票)", price: 80628, type: "group" },
+                { person: "Luke", name: "內陸飛機票", price: 55630, type: "group" },
+                { person: "Ting", name: "埃及sim卡", price: 1017, type: "personal" },
+                { person: "Ting", name: "旅平不便險", price: 1664, type: "personal" },
+                { person: "Ting", name: "Klook 郵輪之旅", price: 96024, type: "group" },
+                { person: "Ting", name: "Klook 黑白沙漠", price: 14430, type: "group" },
+                { person: "Ting", name: "Pyramisa Hotel", price: 6386, type: "group" },
+                { person: "Ting", name: "Crystala Guest House", price: 3093, type: "group" },
+                { person: "Ting", name: "Nebro Nubian House", price: 5196, type: "group" },
+                { person: "Luke", name: "大埃及博物館 門票", price: 3968, type: "group" },
+                { person: "Luke", name: "金字塔+騎駱駝", price: 12876, type: "group" },
+                { person: "Luke", name: "阿斯旺抵達接送", price: 770, type: "group" }
+            ],
             itinerary: [
-                { date: "3/27", events: [{ t: "12:30", title: "機場集合", note: "桃園 T2" }, { t: "15:00", title: "飛往上海", note: "MU5008" }]},
-                { date: "3/28", events: [{ t: "07:30", title: "抵達開羅", note: "落地簽 30USD" }, { t: "11:00", title: "清真寺/博物館", note: "入住 Solana" }, { t: "17:00", title: "哈利利市集", note: "" }]},
-                { date: "3/29", events: [{ t: "09:00", title: "薩卡拉/孟菲斯", note: "08:00 出發" }, { t: "13:00", title: "高原駱駝", note: "" }]},
-                { date: "3/30", events: [{ t: "13:00", title: "黑白沙漠", note: "" }, { t: "20:00", title: "帳篷住宿", note: "" }]},
-                { date: "3/31", events: [{ t: "09:00", title: "沙漠日出", note: "" }, { t: "20:00", title: "回開羅", note: "" }]},
-                { date: "4/1", events: [{ t: "06:45", title: "飛阿斯旺", note: "NP081" }, { t: "11:00", title: "風帆船/努比亞村", note: "" }]},
-                { date: "4/2", events: [{ t: "08:00", title: "郵輪之旅", note: "Princess Sarah" }, { t: "13:00", title: "費萊/康翁波", note: "" }]},
-                { date: "4/3", events: [{ t: "13:00", title: "艾得夫/路克索", note: "" }]},
-                { date: "4/4", events: [{ t: "05:00", title: "熱氣球/帝王谷", note: "" }]},
-                { date: "4/5", events: [{ t: "13:00", title: "回阿斯旺住宿", note: "" }]},
-                { date: "4/6", events: [{ t: "09:00", title: "飛回開羅", note: "NP082" }]},
-                { date: "4/7", events: [{ t: "13:15", title: "返程航班", note: "MU224" }]},
-                { date: "4/8", events: [{ t: "12:20", title: "抵達台灣", note: "桃園 T2" }]}
-            ],
-            packing: [
-                { category: "文件", items: ["護照", "美金/台幣", "行程表"] },
-                { category: "個人", items: ["沐浴乳", "防曬乳", "牙刷牙膏", "日常衣物"] },
-                { category: "電子", items: ["手機相機", "行動電源", "轉接頭"] }
-            ],
-            expenses: [],
-            checkedItems: {}
+                { date: "3/27", events: [
+                    { t: "12:30", loc: "桃園機場T2 集合" },
+                    { t: "15:00", loc: "東航 MU5008 (TPE-PVG)" }
+                ]},
+                { date: "3/28", events: [
+                    { t: "00:50", loc: "東航 MU223 (PVG-CAI)" },
+                    { t: "07:30", loc: "換匯、落地簽、過海關" },
+                    { t: "09:00", loc: "搭車至飯店 Solana" },
+                    { t: "11:00", loc: "穆罕默德·阿里清真寺" },
+                    { t: "13:00", loc: "伊斯蘭藝術博物館" },
+                    { t: "15:00", loc: "洞穴教堂" },
+                    { t: "17:00", loc: "哈利利市集 (要殺價!)" },
+                    { t: "19:00", loc: "當地晚餐" },
+                    { t: "21:00", loc: "回飯店 Solana" }
+                ]},
+                { date: "3/29", events: [
+                    { t: "08:00", loc: "飯店出發" },
+                    { t: "09:00", loc: "薩卡拉金字塔" },
+                    { t: "10:00", loc: "孟菲斯" },
+                    { t: "12:00", loc: "午餐 (自備)" },
+                    { t: "13:00", loc: "吉薩高原騎駱駝 (1.5h)" },
+                    { t: "14:30", loc: "獅身人面像導覽" },
+                    { t: "15:00", loc: "卡夫拉河谷神廟" },
+                    { t: "17:00", loc: "伊斯蘭老城區 夜生活" },
+                    { t: "20:00", loc: "回飯店 Solana" }
+                ]},
+                { date: "3/30", events: [
+                    { t: "08:00", loc: "飯店出發" },
+                    { t: "13:00", loc: "巴哈里亞綠洲" },
+                    { t: "14:30", loc: "黑色沙漠" },
+                    { t: "16:00", loc: "白色沙漠之旅" },
+                    { t: "17:00", loc: "埃及水晶山" },
+                    { t: "20:00", loc: "住宿：沙漠帳篷" }
+                ]},
+                { date: "3/31", events: [
+                    { t: "09:00", loc: "白沙漠觀日出" },
+                    { t: "10:00", loc: "搭車回程 (14:00抵達)" },
+                    { t: "20:00", loc: "回飯店 Solana" }
+                ]},
+                { date: "4/1", events: [
+                    { t: "06:45", loc: "尼羅河航空飛阿斯旺" },
+                    { t: "11:00", loc: "風帆船 & 努比亞村" },
+                    { t: "14:00", loc: "努比亞博物館" },
+                    { t: "18:00", loc: "阿斯旺老夜市" }
+                ]},
+                { date: "4/2", events: [
+                    { t: "08:00", loc: "郵輪入住 Princess Sarah" },
+                    { t: "13:00", loc: "費萊神殿" },
+                    { t: "14:30", loc: "康翁波神廟" }
+                ]},
+                { date: "4/3", events: [
+                    { t: "13:00", loc: "艾得夫神殿" },
+                    { t: "15:00", loc: "路克索神殿" },
+                    { t: "19:00", loc: "住宿郵輪 Mahrousa" }
+                ]},
+                { date: "4/4", events: [
+                    { t: "05:00", loc: "路克索熱氣球" },
+                    { t: "07:00", loc: "帝王谷 & 女王大殿" },
+                    { t: "11:30", loc: "卡納克神廟" }
+                ]},
+                { date: "4/5", events: [
+                    { t: "13:00", loc: "阿斯旺 Crystala Check-in" },
+                    { t: "14:30", loc: "路克索市集 (殺價技巧)" }
+                ]},
+                { date: "4/6", events: [
+                    { t: "09:00", loc: "飛回開羅 NP082" },
+                    { t: "12:00", loc: "大埃及博物館" }
+                ]},
+                { date: "4/7", events: [
+                    { t: "10:00", loc: "飯店退房 & 前往機場" },
+                    { t: "13:15", loc: "MU224 (CAI-PVG)" }
+                ]},
+                { date: "4/8", events: [
+                    { t: "12:20", loc: "MU5007 (PVG-TPE)" },
+                    { t: "14:25", loc: "抵達台灣" }
+                ]}
+            ]
         };
 
-        let state = JSON.parse(localStorage.getItem('egypt_v8_final')) || defaultData;
-        function save() { localStorage.setItem('egypt_v8_final', JSON.stringify(state)); render(); }
+        const packingList = [
+            { cat: "行程文件", items: ["護照", "信用卡", "ESIM/SIM卡＆卡針", "現金 (美金、台幣)"] },
+            { cat: "盥洗用品", items: ["沐浴乳", "洗髮乳", "洗面乳", "卸妝濕巾", "乳液", "化妝水", "防曬乳", "牙刷牙膏", "棉花棒/棉片"] },
+            { cat: "衣物", items: ["短袖", "寬褲", "短褲", "內衣褲", "襪子"] },
+            { cat: "個人衛生", items: ["護唇膏", "凡士林", "乾洗手", "濕紙巾/衛生紙", "護手霜", "牙套", "隱形眼鏡", "化妝品清單"] },
+            { cat: "鞋包配件", items: ["夾腳拖", "帆布鞋", "防盜包", "隨身包", "墨鏡", "帽子", "頸枕", "絲巾披肩"] },
+            { cat: "藥品", items: ["止瀉胃腸藥", "OK蹦", "暈車藥", "感冒藥", "曼秀雷敦", "防蚊液", "止痛藥", "泰國吸鼻"] },
+            { cat: "電子產品", items: ["手機", "相機/鏡頭", "底片機/底片", "電池", "充電器", "記憶卡"] },
+            { cat: "其他", items: ["筆", "耳塞/眼罩", "轉接頭/線", "行動電源", "指甲剪"] }
+        ];
 
-        // --- 匯率換算邏輯 ---
-        function convertCurrency(source) {
-            const egpEl = document.getElementById('calc-egp');
-            const usdEl = document.getElementById('calc-usd');
-            const twdEl = document.getElementById('calc-twd');
-
-            if (source === 'egp') {
-                const twdValue = egpEl.value * rates.egpToTwd;
-                twdEl.value = twdValue.toFixed(2);
-                usdEl.value = (twdValue / rates.usdToTwd).toFixed(2);
-            } else if (source === 'usd') {
-                const twdValue = usdEl.value * rates.usdToTwd;
-                twdEl.value = twdValue.toFixed(2);
-                egpEl.value = (twdValue / rates.egpToTwd).toFixed(2);
-            } else if (source === 'twd') {
-                egpEl.value = (twdEl.value / rates.egpToTwd).toFixed(2);
-                usdEl.value = (twdEl.value / rates.usdToTwd).toFixed(2);
-            }
-        }
+        function save() { localStorage.setItem('egypt_v9', JSON.stringify(state)); render(); }
 
         function nav(id) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             document.querySelectorAll('.nav-item').forEach(el => el.classList.replace('text-[#a53816]', 'text-gray-400'));
-            const currentBtn = Array.from(document.querySelectorAll('.nav-item')).find(btn => btn.getAttribute('onclick').includes(id));
-            if(currentBtn) currentBtn.classList.replace('text-gray-400', 'text-[#a53816]');
+            event.currentTarget.classList.replace('text-gray-400', 'text-[#a53816]');
             if(id === 'tips') updateWeather();
         }
 
@@ -180,17 +241,25 @@
                 const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=30.0444&longitude=31.2357&current_weather=true');
                 const data = await res.json();
                 document.getElementById('temp').innerText = `${Math.round(data.current_weather.temperature)}°C`;
-            } catch (e) { document.getElementById('temp').innerText = "28°C"; }
+            } catch (e) { document.getElementById('temp').innerText = "26°C"; }
         }
 
-        function addUserExpense() {
-            const person = document.getElementById('new-exp-person').value;
-            const name = document.getElementById('new-exp-name').value;
-            const price = document.getElementById('new-exp-price').value;
+        function convertRate(src) {
+            const e = document.getElementById('calc-egp'), u = document.getElementById('calc-usd'), t = document.getElementById('calc-twd');
+            if(src === 'egp') { t.value = (e.value * 0.65).toFixed(1); u.value = (t.value / 32.5).toFixed(1); }
+            if(src === 'usd') { t.value = (u.value * 32.5).toFixed(1); e.value = (t.value / 0.65).toFixed(1); }
+            if(src === 'twd') { e.value = (t.value / 0.65).toFixed(1); u.value = (t.value / 32.5).toFixed(1); }
+        }
+
+        function addExpense() {
+            const person = document.getElementById('exp-person').value;
+            const type = document.getElementById('exp-type').value;
+            const name = document.getElementById('exp-name').value;
+            const price = parseFloat(document.getElementById('exp-price').value);
             if(name && price) {
-                state.expenses.push({ id: Date.now(), person, name, price: parseFloat(price) });
-                document.getElementById('new-exp-name').value = '';
-                document.getElementById('new-exp-price').value = '';
+                state.expenses.push({ person, name, price, type });
+                document.getElementById('exp-name').value = '';
+                document.getElementById('exp-price').value = '';
                 save();
             }
         }
@@ -198,47 +267,61 @@
         function render() {
             // 行程渲染
             const daySel = document.getElementById('day-selector');
-            daySel.innerHTML = state.itinerary.map((d, i) => `
+            daySel.innerHTML = state.itinerary.map(d => `
                 <div onclick="state.currentDay='${d.date}';save();" class="day-badge ${state.currentDay===d.date?'active':''}">
-                    <span class="text-[9px] opacity-60">${d.date.split('/')[1]}日</span><span class="font-bold">D${i+1}</span>
+                    <span class="text-[9px] opacity-60">${d.date.split('/')[1]}日</span><span class="font-bold">D${state.itinerary.indexOf(d)}</span>
                 </div>`).join('');
             
-            const activeD = state.itinerary.find(d => d.date === state.currentDay);
-            document.getElementById('itinerary-list').innerHTML = activeD.events.map(e => `
+            const activeDay = state.itinerary.find(d => d.date === state.currentDay);
+            document.getElementById('itinerary-list').innerHTML = activeDay.events.map(e => `
                 <div class="card p-4 flex gap-4 border-l-4 border-[#a53816]">
                     <div class="text-[#4b4963] font-bold text-xs pt-1">${e.t}</div>
-                    <div class="flex-1"><div class="font-bold text-gray-800 text-sm">${e.title}</div><div class="text-[10px] text-gray-400 mt-1">${e.note}</div></div>
+                    <div class="text-sm text-gray-800 font-bold">${e.loc}</div>
                 </div>`).join('');
 
-            // 行李渲染
-            document.getElementById('packing-list').innerHTML = state.packing.map(cat => `
-                <div class="mb-4"><h4 class="text-xs font-bold text-[#a53816] mb-2 opacity-50 uppercase tracking-widest">${cat.category}</h4>
-                <div class="space-y-2">${cat.items.map(item => `
-                    <div onclick="state.checkedItems['${item}']=!state.checkedItems['${item}'];save();" class="card p-3 flex items-center justify-between">
-                        <span class="${state.checkedItems[item]?'checked':''} text-sm">${item}</span>
-                        <i class="fa-regular ${state.checkedItems[item]?'fa-check-circle text-green-500':'fa-circle text-gray-300'}"></i>
+            // 行李清單渲染
+            document.getElementById('packing-list').innerHTML = packingList.map(c => `
+                <div class="mb-4"><h4 class="text-xs font-bold text-[#a53816] mb-2 opacity-50 uppercase tracking-widest">${c.cat}</h4>
+                <div class="space-y-2">${c.items.map(i => `
+                    <div onclick="state.checkedPacking['${i}']=!state.checkedPacking['${i}'];save();" class="card p-3 flex items-center justify-between">
+                        <span class="${state.checkedPacking[i]?'checked':''} text-sm">${i}</span>
+                        <i class="fa-regular ${state.checkedPacking[i]?'fa-check-circle text-green-600':'fa-circle text-gray-300'}"></i>
                     </div>`).join('')}</div></div>`).join('');
 
-            // 帳務與結算
-            let total = 0;
-            const paid = { Ting:0, Luke:0, Joyce:0, Soda:0 };
-            state.expenses.forEach(e => { total += e.price; paid[e.person] += e.price; });
-            const avg = total / 4;
+            // 帳務渲染
+            let groupTotal = 0;
+            const individualPaid = { Ting: 0, Luke: 0, Joyce: 0, Soda: 0 };
+            const individualPersonal = { Ting: 0, Luke: 0, Joyce: 0, Soda: 0 };
             
-            document.getElementById('total-amount').innerText = total.toLocaleString();
-            document.getElementById('member-stats').innerHTML = members.map(m => `
-                <div class="p-2 border rounded-xl bg-white/50">
-                    <div class="text-[9px] font-bold text-gray-400 uppercase">${m}</div>
-                    <div class="text-[10px] font-bold mt-1 ${paid[m]>=avg?'text-green-600':'text-red-500'}">
-                        ${paid[m]>=avg ? '找回: NT$ '+Math.round(paid[m]-avg).toLocaleString() : '補交: NT$ '+Math.round(avg-paid[m]).toLocaleString()}
-                    </div>
+            state.expenses.forEach(e => {
+                if(e.type === 'group') groupTotal += e.price;
+                individualPaid[e.person] += e.price;
+                if(e.type === 'personal') individualPersonal[e.person] += e.price;
+            });
+
+            const share = groupTotal / 4;
+            document.getElementById('total-group-amount').innerText = `NT$ ${Math.round(groupTotal).toLocaleString()}`;
+            document.getElementById('member-summary').innerHTML = ["Ting", "Luke", "Joyce", "Soda"].map(m => `
+                <div class="text-center">
+                    <div class="text-[10px] font-bold text-gray-400">${m}</div>
+                    <div class="text-[11px] font-bold text-[#a53816] mt-1">${Math.round(share + individualPersonal[m]).toLocaleString()}</div>
                 </div>`).join('');
 
             document.getElementById('expense-list').innerHTML = state.expenses.map(e => `
-                <div class="card p-3 flex justify-between items-center bg-white shadow-sm">
-                    <div><div class="text-[10px] text-gray-400">${e.person} 墊付</div><div class="text-sm font-bold">${e.name}</div></div>
-                    <div class="text-[#a53816] font-mono font-bold text-sm">NT$ ${e.price.toLocaleString()}</div>
+                <div class="card p-4 flex justify-between items-center text-sm">
+                    <div><div class="text-[10px] font-bold opacity-40 uppercase">${e.person} | ${e.type==='group'?'團體':'個人'}</div><div class="font-bold">${e.name}</div></div>
+                    <div class="font-mono font-bold text-[#a53816]">NT$ ${Math.round(e.price).toLocaleString()}</div>
                 </div>`).reverse().join('');
+        }
+
+        function addCustomItinerary() {
+            const t = prompt("輸入時間 (如 19:00):");
+            const loc = prompt("輸入行程景點:");
+            if(t && loc) {
+                const day = state.itinerary.find(d => d.date === state.currentDay);
+                day.events.push({ t, loc });
+                save();
+            }
         }
 
         render();
