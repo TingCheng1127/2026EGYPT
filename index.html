@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>埃及探險 V3 | TabiFlow</title>
+    
+    <link rel="manifest" href="data:application/manifest+json,{%22name%22:%22EgyptTravel%22,%22short_name%22:%22Egypt%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23F5F5F5%22,%22theme_color%22:%22%23a53816%22}">
+    <meta name="theme-color" content="#a53816">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap');
+        
+        :root {
+            --egypt-red: #a53816;
+            --egypt-blue: #4b4963;
+            --egypt-sand: #f4ece1;
+        }
+
+        body { 
+            font-family: 'Noto Serif TC', "Source Han Serif TC", serif;
+            background-color: var(--egypt-sand);
+            -webkit-tap-highlight-color: transparent;
+            color: #333;
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 25px 25px 0 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+        }
+
+        .card {
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 4px 12px rgba(165, 56, 22, 0.06);
+            border: 1px solid rgba(165, 56, 22, 0.05);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.4s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .day-badge {
+            flex: 0 0 auto;
+            width: 55px;
+            height: 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+            background: white;
+            color: var(--egypt-blue);
+            transition: 0.3s;
+        }
+
+        .day-badge.active {
+            background-color: var(--egypt-red);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 4px 10px rgba(165, 56, 22, 0.3);
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="pb-28">
+
+    <header class="p-6 text-center">
+        <h1 class="text-2xl font-bold text-[#a53816] tracking-widest uppercase">Ancient Egypt V3</h1>
+        <div class="flex justify-center gap-4 mt-2 text-[10px] text-[#4b4963] font-bold opacity-80">
+            <span><i class="fas fa-sun mr-1"></i>早 20°C~30°C</span>
+            <span><i class="fas fa-moon mr-1"></i>晚 15°C~20°C</span>
+        </div>
+    </header>
+
+    <main class="px-5">
+        <section id="itinerary" class="tab-content active">
+            <div class="flex overflow-x-auto gap-3 py-4 no-scrollbar" id="day-selector"></div>
+            
+            <div id="itinerary-list" class="space-y-4 mt-2">
+                </div>
+            
+            <button onclick="addCustomEvent()" class="w-full mt-8 p-4 rounded-2xl border-2 border-dashed border-[#a53816] text-[#a53816] font-bold opacity-60">
+                + 新增自訂備註
+            </button>
+        </section>
+
+        <section id="finance" class="tab-content">
+            <div class="card p-6 mb-6 text-center border-b-4 border-[#a53816]">
+                <span class="text-xs text-gray-400 uppercase tracking-widest">總支出估算</span>
+                <div class="text-4xl font-bold text-[#a53816] mt-2" id="total-amount">0.00</div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <input type="text" id="exp-name" placeholder="項目" class="p-3 card outline-none text-sm">
+                <input type="number" id="exp-price" placeholder="金額" class="p-3 card outline-none text-sm">
+                <button onclick="addExpense()" class="col-span-2 bg-[#a53816] text-white p-3 rounded-xl font-bold shadow-lg">新增支出紀錄</button>
+            </div>
+
+            <div id="expense-list" class="space-y-3"></div>
+        </section>
+
+        <section id="weather" class="tab-content">
+            <div class="card p-8 text-center text-white relative overflow-hidden mb-6" style="background: linear-gradient(135deg, #a53816, #4b4963);">
+                <div class="relative z-10">
+                    <h2 class="text-xl mb-1">開羅 Cairo</h2>
+                    <p id="weather-date" class="text-[10px] opacity-70 mb-4">讀取中...</p>
+                    <div id="temp" class="text-6xl font-bold my-4">--°C</div>
+                    <div id="weather-desc" class="mt-2 text-sm bg-white/20 inline-block px-4 py-1 rounded-full">連線至尼羅河氣象台...</div>
+                </div>
+            </div>
+            <div class="card p-5">
+                <h4 class="font-bold text-[#a53816] mb-3 text-sm border-b pb-2">穿著建議</h4>
+                <p class="text-sm text-gray-600 leading-relaxed">3月底至4月初溫差極大。白天短袖為主，黑白沙漠或夜晚郵輪風大，務必準備防風外套或輕羽絨。</p>
+            </div>
+        </section>
+
+        <section id="checklist" class="tab-content">
+            <div class="space-y-6">
+                <div>
+                    <h3 class="font-bold text-[#a53816] mb-3"><i class="fas fa- wifi mr-2"></i>網路與通訊</h3>
+                    <div class="card p-4 text-sm space-y-2">
+                        <p class="flex items-start gap-2 text-red-700 font-bold"><i class="fas fa-exclamation-triangle mt-1"></i>建議機場買 Orange 實體卡。</p>
+                        <p class="text-gray-500">❌ 盡量避免使用 Esim，訊號較不穩定。</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-[#a53816] mb-3"><i class="fas fa-taxi mr-2"></i>叫車攻略</h3>
+                    <div class="card p-4 space-y-3 text-sm">
+                        <div class="border-b pb-2">
+                            <span class="font-bold">Uber:</span> 僅限開羅使用，可刷卡。注意司機可能要求取消改收現金。
+                        </div>
+                        <div>
+                            <span class="font-bold">inDrive:</span> 全埃及通用。採議價制，只叫 4.9 顆星以上的司機。
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-bold text-[#a53816] mb-3"><i class="fas fa-hand-holding-usd mr-2"></i>小費參考 (EGP/USD)</h3>
+                    <div class="card overflow-hidden">
+                        <table class="w-full text-xs text-left">
+                            <thead class="bg-gray-50">
+                                <tr><th class="p-3">項目</th><th class="p-3">建議金額</th></tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr><td class="p-3">廁所清潔員</td><td class="p-3">5-10 EGP</td></tr>
+                                <tr><td class="p-3">飯店行李/房務</td><td class="p-3">10-20 EGP / 1 USD</td></tr>
+                                <tr><td class="p-3">包車司機 (日)</td><td class="p-3">100-200 EGP</td></tr>
+                                <tr><td class="p-3">導遊 (日)</td><td class="p-3">150-300 EGP</td></tr>
+                                <tr><td class="p-3">騎駱駝/馬伕</td><td class="p-3">100 EGP / 3 USD</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 h-20 glass-nav flex justify-around items-center px-4 z-50">
+        <button onclick="nav('itinerary')" class="nav-item text-[#a53816] flex flex-col items-center gap-1">
+            <i class="fas fa-map-location-dot text-xl"></i><span class="text-[10px] font-bold">行程</span>
+        </button>
+        <button onclick="nav('finance')" class="nav-item text-gray-400 flex flex-col items-center gap-1">
+            <i class="fas fa-wallet text-xl"></i><span class="text-[10px] font-bold">帳務</span>
+        </button>
+        <button onclick="nav('weather')" class="nav-item text-gray-400 flex flex-col items-center gap-1">
+            <i class="fas fa-cloud-sun text-xl"></i><span class="text-[10px] font-bold">天氣</span>
+        </button>
+        <button onclick="nav('checklist')" class="nav-item text-gray-400 flex flex-col items-center gap-1">
+            <i class="fas fa-compass text-xl"></i><span class="text-[10px] font-bold">攻略</span>
+        </button>
+    </nav>
+
+    <script>
+        // --- 預設行程資料 ---
+        const defaultData = {
+            currentDay: 1,
+            itinerary: [
+                { d: 0, date: "3/27", loc: "出發", events: [
+                    { t: "15:00", title: "台北 → 上海 → 開羅", note: "落地簽 30美金 (3/1起漲價)" }
+                ]},
+                { d: 1, date: "3/28", loc: "開羅", events: [
+                    { t: "07:30", title: "抵達、換錢、接送飯店", note: "飯店接駁 Van 40美金 (可上4人)" },
+                    { t: "白天", title: "穆罕默德·阿里清真寺 / 哈利利市集", note: "市集殺價：10塊的東西通常值3塊" }
+                ]},
+                { d: 2, date: "3/29", loc: "開羅 (導覽)", events: [
+                    { t: "08:00", title: "薩卡拉 / 曼菲斯 / 吉薩金字塔", note: "吉薩午餐沒買要自備；騎駱駝 1.5小時" },
+                    { t: "晚上", title: "伊斯蘭老城區夜生活", note: "建議跟飯店拿到寄放收據" }
+                ]},
+                { d: 3, date: "3/30", loc: "黑白沙漠", events: [
+                    { t: "全天", title: "黑白沙漠 & 水晶山 2日私人探險", note: "注意：溫差大、水、防塵問題" }
+                ]},
+                { d: 4, date: "3/31", loc: "沙漠 → 開羅", events: [
+                    { t: "10:00", title: "白色沙漠看日出 → 搭車回程", note: "預計 14:00-17:00 回飯店休息" }
+                ]},
+                { d: 5, date: "4/1", loc: "阿斯旺", events: [
+                    { t: "06:45", title: "飛機：開羅 → 阿斯旺 (1.5hr)", note: "接送 Van 40美金；阿斯旺河濱大道搭風帆船" }
+                ]},
+                { d: 6, date: "4/2", loc: "郵輪", events: [
+                    { t: "08:00", title: "3天2夜尼羅河郵輪 (5星)", note: "費萊神殿 / 康翁波神廟" }
+                ]},
+                { d: 7, date: "4/3", loc: "郵輪", events: [
+                    { t: "全天", title: "艾得夫神殿 / 路克索神殿", note: "預約 inDrive 包車至阿斯旺 (約90-120美金)" }
+                ]},
+                { d: 8, date: "4/4", loc: "路克索", events: [
+                    { t: "08:00", title: "熱氣球之旅 / 帝王谷 / 孟農巨像", note: "13:00 回程回飯店" }
+                ]},
+                { d: 9, date: "4/5", loc: "阿斯旺", events: [
+                    { t: "全天", title: "路克索市集 / 返回阿斯旺", note: "殺價：不給轉身就走；莎草紙手繪30鎊起" }
+                ]},
+                { d: 10, date: "4/6", loc: "開羅", events: [
+                    { t: "全天", title: "飛機：阿斯旺 → 開羅", note: "去埃及博物館" }
+                ]},
+                { d: 11, date: "4/7", loc: "返程", events: [
+                    { t: "10:00", title: "早餐後出發前往機場", note: "13:30 航班飛往上海" }
+                ]},
+                { d: 12, date: "4/8", loc: "抵達", events: [
+                    { t: "12:20", title: "返回台北", note: "旅程結束" }
+                ]}
+            ],
+            expenses: [
+                { name: "落地簽 (預估)", price: 950 },
+                { name: "開羅接機 Van", price: 1250 }
+            ]
+        };
+
+        // --- 核心邏輯 ---
+        let state = JSON.parse(localStorage.getItem('egypt_pwa_v3')) || defaultData;
+
+        function save() {
+            localStorage.setItem('egypt_pwa_v3', JSON.stringify(state));
+            render();
+        }
+
+        function nav(id) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.replace('text-[#a53816]', 'text-gray-400'));
+            event.currentTarget.classList.replace('text-gray-400', 'text-[#a53816]');
+            if(id === 'weather') updateWeather();
+        }
+
+        function initSelector() {
+            const container = document.getElementById('day-selector');
+            container.innerHTML = '';
+            state.itinerary.forEach(day => {
+                const btn = document.createElement('div');
+                btn.className = `day-badge ${state.currentDay === day.d ? 'active' : ''}`;
+                btn.innerHTML = `<span class="text-[8px] opacity-60">${day.date}</span><span class="font-bold">D${day.d}</span>`;
+                btn.onclick = () => { state.currentDay = day.d; save(); };
+                container.appendChild(btn);
+            });
+        }
+
+        function render() {
+            initSelector();
+            const dayData = state.itinerary.find(d => d.d === state.currentDay);
+            document.getElementById('itinerary-list').innerHTML = dayData.events.map(e => `
+                <div class="card p-4 flex gap-4 border-l-4 border-[#a53816]">
+                    <div class="text-[#4b4963] font-bold text-xs pt-1">${e.t}</div>
+                    <div class="flex-1">
+                        <div class="font-bold text-gray-800">${e.title}</div>
+                        <div class="text-xs text-gray-500 mt-1">${e.note}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            let total = 0;
+            document.getElementById('expense-list').innerHTML = state.expenses.map(e => {
+                total += parseFloat(e.price);
+                return `<div class="card p-4 flex justify-between items-center text-sm">
+                    <span>${e.name}</span><span class="font-bold text-[#a53816] font-mono">EGP ${e.price}</span>
+                </div>`;
+            }).reverse().join('');
+            document.getElementById('total-amount').innerText = total.toLocaleString();
+        }
+
+        function addExpense() {
+            const name = document.getElementById('exp-name').value;
+            const price = document.getElementById('exp-price').value;
+            if(name && price) {
+                state.expenses.push({ name, price: parseFloat(price) });
+                document.getElementById('exp-name').value = '';
+                document.getElementById('exp-price').value = '';
+                save();
+            }
+        }
+
+        async function updateWeather() {
+            document.getElementById('weather-date').innerText = new Date().toLocaleDateString();
+            try {
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=30.0444&longitude=31.2357&current_weather=true');
+                const data = await res.json();
+                document.getElementById('temp').innerText = `${Math.round(data.current_weather.temperature)}°C`;
+                document.getElementById('weather-desc').innerText = "開羅目前氣候晴朗";
+            } catch (e) {
+                document.getElementById('weather-desc').innerText = "暫時無法取得即時天氣";
+            }
+        }
+
+        function addCustomEvent() {
+            const title = prompt("輸入行程標題:");
+            if(title) {
+                const dayData = state.itinerary.find(d => d.d === state.currentDay);
+                dayData.events.push({ t: "自訂", title, note: "自行新增的備註" });
+                save();
+            }
+        }
+
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            const sw = "self.addEventListener('fetch', function(event) {});";
+            const blob = new Blob([sw], {type: 'text/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(blob));
+        }
+
+        render();
+    </script>
+</body>
+</html>
