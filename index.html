@@ -4,13 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>埃及之旅</title>
+    
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
     <meta name="apple-mobile-web-app-title" content="埃及之旅">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#a53816">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700&display=swap');
         :root { --egypt-red: #a53816; --egypt-blue: #4b4963; --egypt-sand: #f4ece1; }
@@ -24,17 +27,162 @@
         .day-badge.active { background-color: var(--egypt-red); color: white; transform: scale(1.05); }
         .checked { text-decoration: line-through; opacity: 0.4; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .todo-highlight { border-left: 4px solid #f59e0b; background-color: #fffbeb; }
     </style>
 </head>
 <body class="pb-28">
 
     <header class="p-8 text-center">
         <div class="text-3xl font-bold text-[#a53816] tracking-[0.2em] mb-1">埃及之旅</div>
-        <div class="text-sm font-bold text-[#a53816] tracking-[0.4em] uppercase opacity-60">ANCIENT EGYPT</div>
+        <div class="text-xs font-bold text-[#a53816] tracking-[0.4em] uppercase opacity-60">ANCIENT EGYPT</div>
     </header>
 
     <main class="px-5">
+        <section id="itinerary" class="tab-content active">
+            <div id="day-selector" class="flex overflow-x-auto gap-3 py-4 no-scrollbar"></div>
+            <div id="itinerary-list" class="space-y-4 mt-2"></div>
+            <button onclick="addEventPrompt()" class="w-full mt-8 p-4 rounded-2xl border-2 border-dashed border-[#a53816] text-[#a53816] font-bold">+ 新增自訂行程</button>
+        </section>
+
+        <section id="packing" class="tab-content">
+            <h3 class="font-bold text-[#a53816] mb-5 text-lg"><i class="fas fa-suitcase-rolling mr-2"></i>行李清單檢查</h3>
+            <div id="packing-list" class="space-y-6"></div>
+        </section>
+
+        <section id="finance" class="tab-content">
+            <div class="card p-5 mb-6 bg-[#4b4963] text-white">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="text-center"><span class="text-[10px] opacity-60">EGP</span><input type="number" id="calc-egp" oninput="convertRate('egp')" placeholder="0" class="w-full bg-transparent border-b border-white/20 text-center text-lg outline-none text-white"></div>
+                    <div class="text-center"><span class="text-[10px] opacity-60">USD</span><input type="number" id="calc-usd" oninput="convertRate('usd')" placeholder="0" class="w-full bg-transparent border-b border-white/20 text-center text-lg outline-none text-white"></div>
+                    <div class="text-center"><span class="text-[10px] opacity-60">TWD</span><input type="number" id="calc-twd" oninput="convertRate('twd')" placeholder="0" class="w-full bg-transparent border-b border-white/20 text-center text-lg outline-none text-white"></div>
+                </div>
+            </div>
+            <div class="card p-6 mb-6 text-center border-b-4 border-[#a53816]">
+                <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">總團費支出 (TWD)</div>
+                <div class="text-3xl font-bold text-[#a53816] mt-1" id="total-group-amount">0</div>
+                <div id="member-summary" class="grid grid-cols-4 gap-2 mt-5"></div>
+            </div>
+            <div id="expense-list" class="space-y-3"></div>
+        </section>
+
+        <section id="tips" class="tab-content">
+            <div class="card p-6 text-center text-white mb-6" style="background: linear-gradient(135deg, #a53816, #4b4963);">
+                <div id="temp" class="text-5xl font-bold mb-2">--°C</div>
+                <p class="text-[10px] opacity-60">Cairo Weather</p>
+            </div>
+            <div class="space-y-6">
+                <div class="card p-5 text-[11px] space-y-3 leading-relaxed">
+                    <h3 class="font-bold text-[#a53816] text-sm"><i class="fas fa-info-circle mr-2"></i>旅遊指南</h3>
+                    <p>📶 <b>網路：</b>建議 Orange 實體卡。🙅 避開 Esim。</p>
+                    <p>🚕 <b>叫車：</b>開羅 Uber；全境 inDrive (4.9⭐以上)。</p>
+                </div>
+                <div class="card overflow-hidden text-[11px]">
+                    <table class="w-full text-left">
+                        <tr class="bg-gray-50 border-b font-bold"><td class="p-2">項目</td><td class="p-2">建議金額 (EGP/USD)</td></tr>
+                        <tr class="border-b"><td class="p-2">廁所</td><td class="p-2">5-10 EGP</td></tr>
+                        <tr class="border-b"><td class="p-2">行李</td><td class="p-2">1 USD</td></tr>
+                        <tr><td class="p-2">司機</td><td class="p-2">100-200 EGP</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 h-20 glass-nav flex justify-around items-center px-4 z-50">
+        <button onclick="nav('itinerary')" class="nav-item text-[#a53816] flex flex-col items-center gap-1"><i class="fas fa-calendar-alt text-xl"></i><span class="text-[10px] font-bold">行程</span></button>
+        <button onclick="nav('packing')" class="nav-item text-gray-400 flex flex-col items-center gap-1"><i class="fas fa-check-double text-xl"></i><span class="text-[10px] font-bold">行李</span></button>
+        <button onclick="nav('finance')" class="nav-item text-gray-400 flex flex-col items-center gap-1"><i class="fas fa-wallet text-xl"></i><span class="text-[10px] font-bold">帳務</span></button>
+        <button onclick="nav('tips')" class="nav-item text-gray-400 flex flex-col items-center gap-1"><i class="fas fa-compass text-xl"></i><span class="text-[10px] font-bold">攻略</span></button>
+    </nav>
+
+    <script>
+        const state = JSON.parse(localStorage.getItem('egypt_v12_2')) || {
+            currentDay: "3/27",
+            checkedPacking: {},
+            expenses: [
+                { id: 1, person: "Ting", name: "台-上-開機票", price: 80628, type: "group", paid: true },
+                { id: 2, person: "Luke", name: "內陸飛機票", price: 55630, type: "group", paid: true },
+                { id: 3, person: "Ting", name: "埃及sim卡", price: 1017, type: "personal", paid: true },
+                { id: 4, person: "Ting", name: "旅平不便險", price: 1664, type: "personal", paid: true },
+                { id: 5, person: "Ting", name: "Klook 郵輪之旅", price: 96024, type: "group", paid: true },
+                { id: 6, person: "Ting", name: "Klook 黑白沙漠", price: 14430, type: "group", paid: true },
+                { id: 7, person: "Ting", name: "Pyramisa Hotel", price: 6386, type: "group", paid: true },
+                { id: 8, person: "Ting", name: "Crystala Guest House", price: 3093, type: "group", paid: true },
+                { id: 9, person: "Ting", name: "Nebro Nubian House", price: 5196, type: "group", paid: true },
+                { id: 10, person: "Luke", name: "大埃及博物館 門票", price: 3968, type: "group", paid: true },
+                { id: 11, person: "Luke", name: "金字塔+騎駱駝", price: 12876, type: "group", paid: true },
+                { id: 12, person: "Luke", name: "阿斯旺接送", price: 770, type: "group", paid: true }
+            ],
+            itinerary: [
+                { date: "3/27", d: "D0", events: [{ id: 101, t: "12:00", loc: "集合時間改 12 點 + 換美金" }, { id: 102, t: "15:00", loc: "飛機起飛：MU5008" }]},
+                { date: "3/28", d: "D1", events: [{ id: 201, t: "00:50", loc: "飛機起飛：MU223" }, { id: 202, t: "07:30", loc: "換匯、落地簽、過海關" }, { id: 203, t: "09:00", loc: "搭車到飯店 Solana" }, { id: 204, t: "11:00", loc: "穆罕默德·阿里清真寺" }, { id: 205, t: "13:00", loc: "伊斯蘭藝術博物館" }, { id: 206, t: "16:00", loc: "哈利利市集" }, { id: 207, t: "18:00", loc: "晚餐：Koshary Abou Tarek" }]},
+                { date: "3/29", d: "D2", events: [{ id: 301, t: "08:00", loc: "飯店出發" }, { id: 302, t: "09:00", loc: "薩卡拉金字塔" }, { id: 303, t: "13:00", loc: "吉薩高原騎駱駝" }]},
+                { date: "4/6", d: "D10", events: [{ id: 1101, t: "05:40", loc: "出發阿斯旺機場" }, { id: 1102, t: "13:00", loc: "大埃及博物館" }]},
+                { date: "4/8", d: "D12", events: [{ id: 1301, t: "12:20", loc: "飛機起飛：MU5007" }]}
+            ]
+        };
+
+        const packingList = [
+            { cat: "文件與防疫", items: ["護照", "信用卡", "美金/台幣", "sim卡", "口罩", "垃圾袋"] },
+            { cat: "盥洗與衛生", items: ["沐浴乳", "洗髮乳", "乳液", "防曬乳", "牙刷牙膏", "衛生紙", "濕紙巾"] },
+            { cat: "生活電器", items: ["延長線", "熱水壺", "濾芯", "轉接頭", "行動電源", "手電筒"] },
+            { cat: "食衣配件", items: ["免洗筷", "泡麵", "零食", "短袖寬褲", "墨鏡", "帽子"] }
+        ];
+
+        function save() { localStorage.setItem('egypt_v12_2', JSON.stringify(state)); render(); }
+        function nav(id) { document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.getElementById(id).classList.add('active'); render(); }
+        
+        function convertRate(src) {
+            const e = document.getElementById('calc-egp'), u = document.getElementById('calc-usd'), t = document.getElementById('calc-twd');
+            if(src === 'egp') { t.value = (e.value * 0.65).toFixed(1); u.value = (t.value / 32.5).toFixed(1); }
+            if(src === 'usd') { t.value = (u.value * 32.5).toFixed(1); e.value = (t.value / 0.65).toFixed(1); }
+            if(src === 'twd') { e.value = (t.value / 0.65).toFixed(1); u.value = (t.value / 32.5).toFixed(1); }
+        }
+
+        function addEventPrompt() {
+            const t = prompt("時間 (如 08:00):");
+            const loc = prompt("內容:");
+            if(t && loc) {
+                const day = state.itinerary.find(d => d.date === state.currentDay);
+                day.events.push({ id: Date.now(), t, loc });
+                save();
+            }
+        }
+
+        function render() {
+            // 行程渲染
+            const daySel = document.getElementById('day-selector');
+            daySel.innerHTML = state.itinerary.map(d => `<div onclick="state.currentDay='${d.date}';save();" class="day-badge ${state.currentDay===d.date?'active':''}"><span>${d.date}</span><span class="text-xs font-bold">${d.d}</span></div>`).join('');
+            
+            const activeDay = state.itinerary.find(d => d.date === state.currentDay);
+            document.getElementById('itinerary-list').innerHTML = activeDay.events.map(e => `
+                <div class="card p-4 border-l-4 border-[#a53816] flex justify-between">
+                    <div><span class="text-[#4b4963] font-bold text-xs mr-3">${e.t}</span><span class="text-sm font-bold">${e.loc}</span></div>
+                </div>`).join('');
+
+            // 行項渲染
+            document.getElementById('packing-list').innerHTML = packingList.map(c => `
+                <div class="mb-5"><h4 class="text-xs font-bold text-[#a53816] mb-2 opacity-50 uppercase tracking-widest">${c.cat}</h4>
+                <div class="space-y-2">${c.items.map(i => `<div onclick="state.checkedPacking['${i}']=!state.checkedPacking['${i}'];save();" class="card p-3 flex justify-between"><span>${i}</span><i class="fa-regular ${state.checkedPacking[i]?'fa-check-circle text-green-500':'fa-circle text-gray-300'}"></i></div>`).join('')}</div></div>`).join('');
+
+            // 帳務看板渲染
+            let groupTotal = 0; const indPaid = { Ting:0, Luke:0, Joyce:0, Soda:0 }, indPers = { Ting:0, Luke:0, Joyce:0, Soda:0 };
+            state.expenses.forEach(e => { if(e.paid) { if(e.type === 'group') groupTotal += e.price; indPaid[e.person] += e.price; if(e.type === 'personal') indPers[e.person] += e.price; } });
+            const share = groupTotal / 4;
+            document.getElementById('total-group-amount').innerText = `NT$ ${Math.round(groupTotal).toLocaleString()}`;
+            document.getElementById('member-summary').innerHTML = ["Ting", "Luke", "Joyce", "Soda"].map(m => `<div class="text-center"><div class="text-[9px] font-bold text-gray-400 uppercase">${m}</div><div class="text-[10px] font-bold text-[#a53816] mt-1">${Math.round(share + indPers[m]).toLocaleString()}</div></div>`).join('');
+            
+            // 帳務清單渲染
+            document.getElementById('expense-list').innerHTML = state.expenses.map(e => `
+                <div class="card p-4 flex justify-between items-center">
+                    <div><div class="text-[9px] font-bold opacity-40 uppercase">${e.person} | ${e.type==='group'?'團體':'個人'}</div><div class="text-sm font-bold">${e.name}</div></div>
+                    <div class="text-right"><div class="font-mono font-bold text-[#a53816] text-sm">NT$ ${Math.round(e.price).toLocaleString()}</div><i class="fas fa-check-circle text-green-500 opacity-60 text-xs"></i></div>
+                </div>`).reverse().join('');
+        }
+
+        nav('itinerary');
+    </script>
+</body>
+</html>    <main class="px-5">
         <section id="itinerary" class="tab-content active">
             <div id="day-selector" class="flex overflow-x-auto gap-3 py-4 no-scrollbar"></div>
             <div id="itinerary-list" class="space-y-4 mt-2"></div>
