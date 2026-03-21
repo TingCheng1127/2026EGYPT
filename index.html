@@ -40,6 +40,32 @@
         <section id="itinerary" class="tab-content active">
             <div id="day-selector" class="flex overflow-x-auto gap-3 py-4 no-scrollbar"></div>
             <div id="itinerary-list" class="space-y-4 mt-2"></div>
+            <button onclick="addCustomItinerary()" class="w-full mt-8 p-4 rounded-2xl border-2 border-dashed border-[#a53816] text-[#a53816] font-bold">+ 新增自訂行程</button>
+        </section>
+
+        <section id="packing" class="tab-content">
+            <h3 class="font-bold text-[#a53816] mb-5 text-lg"><i class="fas fa-suitcase-rolling mr-2"></i>行李清單檢查</h3>
+            <div id="packing-list" class="space-y-6"></div>
+        </section>
+
+        <section id="finance" class="tab-content">
+            <div class="card p-5 mb-6 bg-[#4b4963] text-white">
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="text-center"><span class="text-[10px] opacity-60">EGP</span><input type="number" id="calc-egp" oninput="convertRate('egp')" placeholder="0" class="w-full bg-transparent border-b border-white/20 text-center text-lg outline-none text-white"></div>
+                    <div class="text-center"><span class="text-[10px] opacity-60">USD</span><input type="number" id="calc-usd" oninput="convertRate('usd')" placeholder="0" class="w-full bg-transparent border-b border-white/20 text-center text-lg outline-none text-white"></div>
+                    <div class="text-center"><span class="text-[10px] opacity-60">TWD</span><input type="number" id="calc-twd" oninput="convertRate('twd')" placeholder="0" class="w-full bg-transparent border-b border-white/20 text-center text-lg outline-none text-white"></div>
+                </div>
+            </div>
+
+            <div class="card p-6 mb-6 text-center border-b-4 border-[#a53816]">
+                <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">已結算總團費 (TWD)</div>
+                <div class="text-3xl font-bold text-[#a53816] mt-1" id="total-group-amount">0</div>
+                <div id="member-summary" class="grid grid-cols-4 gap-2 mt-5"></div>    </header>
+
+    <main class="px-5">
+        <section id="itinerary" class="tab-content active">
+            <div id="day-selector" class="flex overflow-x-auto gap-3 py-4 no-scrollbar"></div>
+            <div id="itinerary-list" class="space-y-4 mt-2"></div>
             <button onclick="addEventPrompt()" class="w-full mt-8 p-4 rounded-2xl border-2 border-dashed border-[#a53816] text-[#a53816] font-bold">+ 新增自訂行程</button>
         </section>
 
