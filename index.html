@@ -124,7 +124,7 @@
     </nav>
 
     <script>
-        const state = JSON.parse(localStorage.getItem('egypt_v15_final')) || {
+        const state = JSON.parse(localStorage.getItem('egypt_v16_final')) || {
             currentDay: "3/27",
             checkedPacking: {},
             expenses: [
@@ -139,7 +139,9 @@
                 { id: 9, person: "Ting", name: "nebro nubian guest house", price: 5196, type: "group", paid: true },
                 { id: 10, person: "Luke", name: "大埃及博物館 門票", price: 3968, type: "group", paid: true },
                 { id: 11, person: "Luke", name: "金字塔+騎駱駝", price: 12876, type: "group", paid: true },
-                { id: 12, person: "Luke", name: "阿斯旺抵達的接送", price: 770, type: "group", paid: true }
+                { id: 12, person: "Luke", name: "阿斯旺抵達的接送", price: 770, type: "group", paid: true },
+                { id: 13, person: "Ting", name: "prestige pyramids INN", price: 6164, type: "group", paid: false },
+                { id: 14, person: "Ting", name: "Unique apartment", price: 1687, type: "group", paid: false }
             ],
             itinerary: [
                 { date: "3/27", d: "D0", events: [
@@ -148,7 +150,7 @@
                 ]},
                 { date: "3/28", d: "D1", events: [
                     { id: 201, t: "00:50", loc: "飛機起飛：MU223" },
-                    { id: 202, t: "07:30", loc: "換匯（美金換埃鎊）、落地簽（30美金）、過海關" },
+                    { id: 202, t: "07:30", loc: "換匯、落地簽、過海關" },
                     { id: 203, t: "09:00", loc: "搭車到飯店 prestige pyramids INN" },
                     { id: 204, t: "09:30", loc: "確認隔天早餐時間", isTodo: true },
                     { id: 205, t: "11:00", loc: "穆罕默德·阿里清真寺" },
@@ -262,7 +264,7 @@
             { cat: "其他", items: ["筆", "耳塞", "眼罩", "轉接頭", "轉接線", "行動電源", "指甲剪", "免洗筷", "口罩", "垃圾袋", "衛生紙", "泡麵", "濾芯", "熱水壺", "延長線", "墨鏡", "乳液", "sim卡", "零食", "手電筒"] }
         ];
 
-        function save() { localStorage.setItem('egypt_v15_final', JSON.stringify(state)); render(); }
+        function save() { localStorage.setItem('egypt_v16_final', JSON.stringify(state)); render(); }
         
         function nav(id) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
