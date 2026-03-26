@@ -124,8 +124,7 @@
     </nav>
 
     <script>
-        // 更換全新 key，強制放棄之前的快取壞資料
-        const state = JSON.parse(localStorage.getItem('egypt_v14_perfect')) || {
+        const state = JSON.parse(localStorage.getItem('egypt_v15_final')) || {
             currentDay: "3/27",
             checkedPacking: {},
             expenses: [
@@ -150,14 +149,14 @@
                 { date: "3/28", d: "D1", events: [
                     { id: 201, t: "00:50", loc: "飛機起飛：MU223" },
                     { id: 202, t: "07:30", loc: "換匯（美金換埃鎊）、落地簽（30美金）、過海關" },
-                    { id: 203, t: "09:00", loc: "搭車到飯店Solana Pyramids View" },
+                    { id: 203, t: "09:00", loc: "搭車到飯店 prestige pyramids INN" },
                     { id: 204, t: "09:30", loc: "確認隔天早餐時間", isTodo: true },
                     { id: 205, t: "11:00", loc: "穆罕默德·阿里清真寺" },
                     { id: 206, t: "13:00", loc: "伊斯蘭藝術博物館" },
                     { id: 207, t: "16:00", loc: "哈利利市集" },
                     { id: 208, t: "18:00", loc: "晚餐伊斯蘭老城區：Koshary Abou Tarek + B.Laban" },
                     { id: 209, t: "20:00", loc: "Alfa Market 採買隔天早 & 午餐" },
-                    { id: 210, t: "21:00", loc: "回飯店Solana Pyramids View (Luke確認隔天金字塔團集合時間)", isTodo: true }
+                    { id: 210, t: "21:00", loc: "回飯店 prestige pyramids INN (Luke確認隔天金字塔團集合時間)", isTodo: true }
                 ]},
                 { date: "3/29", d: "D2", events: [
                     { id: 301, t: "08:00", loc: "飯店出發" },
@@ -168,7 +167,7 @@
                     { id: 306, t: "14:30", loc: "獅身人面像導覽遊、觀光、散步" },
                     { id: 307, t: "15:00", loc: "卡夫拉河谷神廟" },
                     { id: 308, t: "18:00", loc: "晚餐：Oldish 餐廳" },
-                    { id: 309, t: "19:30", loc: "回飯店Solana Pyramids View (確認隔天寄放行李事宜&隔天沙漠團集合時間)", isTodo: true }
+                    { id: 309, t: "19:30", loc: "回飯店 prestige pyramids INN (確認隔天寄放行李事宜&隔天沙漠團集合時間)", isTodo: true }
                 ]},
                 { date: "3/30", d: "D3", events: [
                     { id: 401, t: "08:00", loc: "飯店出發" },
@@ -186,12 +185,12 @@
                     { id: 502, t: "09:00", loc: "白色沙漠觀看日出" },
                     { id: 503, t: "10:00", loc: "回程 (預計14:00到)" },
                     { id: 504, t: "15:00", loc: "洞穴教堂" },
-                    { id: 505, t: "17:00", loc: "晚餐：Felfela" },
-                    { id: 506, t: "19:00", loc: "回飯店Solana Pyramids View (確認隔天接駁車時間&隔天抵達阿斯旺接送時間)", isTodo: true }
+                    { id: 505, t: "17:00", loc: "晚餐：Hagooga (حجوجة)" },
+                    { id: 506, t: "19:00", loc: "回飯店 Unique apartment (確認隔天接駁車時間&隔天抵達阿斯旺接送時間)", isTodo: true }
                 ]},
                 { date: "4/1", d: "D5", events: [
-                    { id: 601, t: "02:45", loc: "集合" },
-                    { id: 602, t: "03:00", loc: "飯店接送到開羅機場T1" },
+                    { id: 601, t: "03:45", loc: "集合" },
+                    { id: 602, t: "04:00", loc: "飯店接送到開羅機場T1" },
                     { id: 603, t: "06:45", loc: "飛機起飛：NP 081" },
                     { id: 604, t: "09:00", loc: "接送到飯店 Nebro Nubian Guest House" },
                     { id: 605, t: "11:00", loc: "Aswan Corniche阿斯旺河濱大道(搭風帆船)-努比亞村" },
@@ -238,7 +237,7 @@
                     { id: 1104, t: "11:30", loc: "接送至飯店Spire West hotel" },
                     { id: 1105, t: "12:10", loc: "寄放行李、外帶午餐" },
                     { id: 1106, t: "13:00", loc: "大埃及博物館" },
-                    { id: 1107, t: "18:00", loc: "晚餐：Hagooga (حجوجة)" },
+                    { id: 1107, t: "18:00", loc: "晚餐：Felfela" },
                     { id: 1108, t: "20:00", loc: "Spire West hotel" }
                 ]},
                 { date: "4/7", d: "D11", events: [
@@ -263,7 +262,7 @@
             { cat: "其他", items: ["筆", "耳塞", "眼罩", "轉接頭", "轉接線", "行動電源", "指甲剪", "免洗筷", "口罩", "垃圾袋", "衛生紙", "泡麵", "濾芯", "熱水壺", "延長線", "墨鏡", "乳液", "sim卡", "零食", "手電筒"] }
         ];
 
-        function save() { localStorage.setItem('egypt_v14_perfect', JSON.stringify(state)); render(); }
+        function save() { localStorage.setItem('egypt_v15_final', JSON.stringify(state)); render(); }
         
         function nav(id) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -325,7 +324,6 @@
         }
 
         function render() {
-            // 安全防護：如果找不到 activeDay，就預設跳回第一天
             let activeDay = state.itinerary.find(d => d.date === state.currentDay);
             if (!activeDay) { state.currentDay = state.itinerary[0].date; activeDay = state.itinerary[0]; }
 
